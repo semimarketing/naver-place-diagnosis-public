@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    네이버 플레이스 30초 정밀 진단 전용 모던 스타일시트 (style.css)
    ========================================================================== */
 
@@ -67,15 +67,28 @@ body {
 
 .brand-logo-link {
   display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
   text-decoration: none;
   line-height: 1;
-  
+}
+
+.brand-logo-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.brand-logo-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .brand-logo-main {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 900;
   color: #0F172A;
   letter-spacing: -0.5px;
