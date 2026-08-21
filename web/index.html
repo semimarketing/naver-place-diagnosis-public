@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>플레이스 정밀 진단 | 세미마케팅</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="logo-area">
+          <a href="https://mkt.mainko.net" target="_blank" rel="noopener noreferrer" class="brand-logo-link" title="공식 홈페이지로 이동">
+            <span class="brand-logo-main">SEMI<span class="brand-logo-blue">MARKETING</span></span>
+            <span class="brand-logo-sub">GROWTH &amp; AI SOLUTION</span>
+          </a>
+        </div>
+        <div class="header-right-area">
+          <div class="rate-limit-pill" id="rateLimitBadge">
+            <span>잔여 진단 횟수: <strong id="remainingCount">-</strong>회 (10분 기준)</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Hero / Input Section -->
+    <main class="main-content">
+      <section class="hero-section">
+        <div class="hero-text">
+          <h2>우리 매장의 플레이스, <strong>노출 경쟁력</strong>은 어느 정도일까요?</h2>
+          <p>플레이스 URL 또는 매장 번호만 넣으면 당신의 플레이스를 정밀 진단해 드립니다.</p>
+        </div>
+
+                <div class="diagnosis-search-box">
+          <form id="diagnosisForm" class="search-form-row" onsubmit="handleDiagnose(event)">
+            <input 
+              type="text" 
+              id="placeUrlInput" 
+              class="search-input-field"
+              placeholder="네이버 플레이스 지도 링크 또는 매장 번호를 입력하세요 (예: https://naver.me/...)"
+              autocomplete="off"
+              required
+            >
+            <button type="submit" class="btn-diagnose-submit" id="submitBtn">진단하기</button>
+          </form>
+          <p class="search-helper-text">예) https://m.place.naver.com/place/1558937277/home 또는 매장 ID 숫자</p>
+        </div>
+      </section>
+
+      <!-- Loading State -->
+      <section class="loading-section" id="loadingSection" style="display: none;">
+        <div class="loading-card">
+          <div class="spinner-ring"></div>
+          <h3 id="loadingTitle">플레이스 분석 중...</h3>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Result Section -->
+      <section class="result-section" id="resultSection" style="display: none;">
+        <!-- Store Header Banner -->
+                <!-- Place Index Gauge Card (레퍼런스 반원 게이지 완벽 구현) -->
+                <!-- Place Index Gauge Card -->
+        <div class="gauge-card section-card">
+          <div class="gauge-header">
+            <h2 class="gauge-store-title" id="gaugeStoreName">99숯불집 부평점</h2>
+          </div>
+
+          <div class="gauge-visual-container">
+                        <svg class="gauge-svg" viewBox="0 0 460 260">
+              <defs>
+                                                                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <!-- Muzli Palette: #ff1a40 / #b31240 / #ffc6d6 / #3bff1a / #29b312 -->
+                  <!-- 일반 (레드/버건디) -> 준최 (소프트 로즈핑크) -> 최적 (비비드 네온그린/에메랄드) -->
+                  <stop offset="0%" stop-color="#b31240" />
+                  <stop offset="15%" stop-color="#ff1a40" />
+                  <stop offset="35%" stop-color="#ff6b8b" />
+                  <stop offset="50%" stop-color="#ffc6d6" />
+                  <stop offset="68%" stop-color="#a3ff8f" />
+                  <stop offset="85%" stop-color="#3bff1a" />
+                  <stop offset="100%" stop-color="#29b312" />
+                </linearGradient>
+              </defs>
+
+              <!-- Main Arc Track (R=160, 중심: 230, 220) -->
+              <path d="M 70 220 A 160 160 0 0 1 390 220" fill="none" stroke="url(#gaugeGradient)" stroke-width="20" stroke-linecap="round" />
+
+              <!-- Inner Ticks Guideline -->
+              <path d="M 88 220 A 142 142 0 0 1 372 220" fill="none" stroke="#E2E8F0" stroke-width="2" stroke-dasharray="3 8" />
+
+              <!-- Gauge Scale Labels (바깥쪽 R=195 배치로 게이지 바와 100% 분리 및 크기 확장) -->
+              <!-- 각도: 180도(일반) ~ 0도(최적4) -->
+              <text x="22" y="225" class="gauge-tick-label">일반</text>
+              <text x="38" y="152" class="gauge-tick-label">준최1</text>
+              <text x="82" y="92" class="gauge-tick-label">준최2</text>
+              <text x="148" y="48" class="gauge-tick-label">준최3</text>
+              <text x="230" y="32" class="gauge-tick-label center">준최4</text>
+              <text x="312" y="48" class="gauge-tick-label">최적1</text>
+              <text x="378" y="92" class="gauge-tick-label">최적2</text>
+              <text x="422" y="152" class="gauge-tick-label">최적3</text>
+              <text x="438" y="225" class="gauge-tick-label">최적4</text>
+
+              <!-- Rotating Needle (원점: 230, 220, 기본 3시 방향 0도, -180도일 때 9시 일반) -->
+              <g id="gaugeNeedleGroup" transform="rotate(-180, 230, 220)" style="transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <line x1="230" y1="220" x2="385" y2="220" stroke="#1E293B" stroke-width="4.5" stroke-linecap="round" />
+                <circle cx="380" cy="220" r="3.5" fill="#1E293B" />
+              </g>
+
+              <!-- Center Needle Pivot -->
+              <circle cx="230" cy="220" r="10" fill="#1E293B" />
+              <circle cx="230" cy="220" r="4" fill="#FFFFFF" />
+            </svg>
+          </div>
+
+          <!-- Gauge Bottom Centered Info (아래로 분리 배치하여 바늘/텍스트 겹침 100% 방지) -->
+          <div class="gauge-score-display">
+            <span class="gauge-grade-text" id="gaugeCenterGrade">최적2</span>
+            <span class="gauge-score-text" id="gaugeCenterScore">플레이스 지수 73.0점</span>
+          </div>
+        </div>
+
+        <!-- 7 Axis Score Grid -->
+        <div class="section-card">
+          <div class="card-header">
+            <h3>플레이스 정밀 분석</h3>
+          </div>
+          <div class="axis-grid" id="axisGrid">
+            <!-- Dynamic Axis Cards -->
+          </div>
+        </div>
+
+        <!-- Customer Sentiment & Themes (각각 가로 전체 단독 배치) -->
+        <!-- Sentiment Keywords -->
+        <div class="section-card">
+          <div class="card-header">
+            <h3>방문자 주요 반응 키워드</h3>
+          </div>
+          <div class="sentiment-bar-list" id="sentimentList">
+            <!-- Dynamic Sentiment Bars -->
+          </div>
+        </div>
+
+        <!-- Themes -->
+        <div class="section-card">
+          <div class="card-header">
+            <h3>주요 테마별 만족도</h3>
+          </div>
+          <div class="theme-bar-list" id="themeList">
+            <!-- Dynamic Theme Bars -->
+          </div>
+        </div>
+
+        <!-- Actionable Tips & Hidden Keywords (블러 잠금 및 상담 유도 카드) -->
+        <div class="two-col-grid">
+          <!-- Tips Card -->
+          <div class="section-card blur-locked-card">
+            <div class="card-header">
+              <div class="badge-lock-header">
+                <h3>노출 순위 개선 상세 리포트</h3>
+                <span class="badge-exclusive">상담 전용</span>
+              </div>
+            </div>
+            <div class="tips-list" id="tipsList">
+              <!-- Dynamic Tips (Behind Blur) -->
+            </div>
+            <!-- Clean Centered Lock Overlay -->
+            <div class="blur-cta-overlay" onclick="handleCtaClick()">
+              <div class="lock-circle-icon"></div>
+              <h4 class="lock-headline">상위 노출을 위한 상세 개선 사항</h4>
+              <p class="lock-subtext">매장의 취약 지표를 보완할 수 있는 맞춤형 솔루션을 안내해 드립니다.</p>
+              <button class="btn-lock-cta">무료 1:1 상담받고 확인하기</button>
+            </div>
+          </div>
+
+          <!-- Hidden Keywords Card -->
+          <div class="section-card blur-locked-card">
+            <div class="card-header">
+              <div class="badge-lock-header">
+                <h3>보강 추천 검색 키워드 분석</h3>
+                <span class="badge-exclusive">상담 전용</span>
+              </div>
+            </div>
+            <p class="card-desc" id="prescriptionReason">해당 상권에서 고객들이 자주 검색하는 핵심 키워드를 리뷰와 매장 소개에 반영해 보세요.</p>
+            <div class="keyword-tags" id="hiddenKeywordsList">
+              <!-- Dynamic Keywords (Behind Blur) -->
+            </div>
+            <!-- Clean Centered Lock Overlay -->
+            <div class="blur-cta-overlay" onclick="handleCtaClick()">
+              <div class="lock-circle-icon"></div>
+              <h4 class="lock-headline">상권 핵심 타겟 키워드 리스트</h4>
+              <p class="lock-subtext">내 매장에 유입을 만들어낼 수 있는 실시간 검색 키워드를 제공합니다.</p>
+              <button class="btn-lock-cta">무료 1:1 상담받고 확인하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Card -->
+        <div class="cta-card">
+          <div class="cta-content">
+            <h3>우리 매장 플레이스 노출을 더 높이고 싶으신가요?</h3>
+            <p>매장 맞춤형 관리 방안과 상위 노출 전략을 무료로 안내해 드립니다.</p>
+          </div>
+          <button class="btn-cta" onclick="handleCtaClick()">
+            <span>무료 1:1 맞춤 상담 신청하기</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-links">
+        <a href="https://mkt.mainko.net" target="_blank" rel="noopener noreferrer" class="footer-link">세미마케팅 공식 홈페이지 바로가기</a>
+      </div>
+      <p>© 2012 SEMI MARKETING. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div class="modal-overlay" id="customModal" style="display: none;">
+    <div class="modal-card">
+      <h3 id="modalTitle">안내</h3>
+      <p id="modalMessage">내용</p>
+      <div class="modal-actions">
+        <button class="btn-modal-close" onclick="closeCustomModal()">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
