@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 
 User-agent: GPTBot
@@ -16,4 +16,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://naver-place-diagnosis-public.onrender.com/sitemap.xml
+Sitemap: https://naver-place-diagnosis.pages.dev/sitemap.xml
