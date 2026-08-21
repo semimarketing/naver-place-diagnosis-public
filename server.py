@@ -194,6 +194,22 @@ async def serve_index():
     return HTMLResponse("<h1>네이버 플레이스 정밀 진단 시스템</h1>")
 
 
+@app.get("/robots.txt")
+async def serve_robots():
+    robots_path = os.path.join(web_dir, "robots.txt")
+    if os.path.exists(robots_path):
+        return FileResponse(robots_path, media_type="text/plain")
+    return HTMLResponse("User-agent: *\nAllow: /\n", media_type="text/plain")
+
+
+@app.get("/sitemap.xml")
+async def serve_sitemap():
+    sitemap_path = os.path.join(web_dir, "sitemap.xml")
+    if os.path.exists(sitemap_path):
+        return FileResponse(sitemap_path, media_type="application/xml")
+    return HTMLResponse("<urlset></urlset>", media_type="application/xml")
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
     uvicorn.run("server:app", host="0.0.0.0", port=port, reload=False)
