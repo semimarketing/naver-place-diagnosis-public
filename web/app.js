@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 네이버 플레이스 30초 정밀 진단 클라이언트 스크립트 (app.js)
  */
 
@@ -32,9 +32,14 @@ function restoreLastDiagnosis() {
   }
 }
 
+// API Base URL (로컬이면 '', 배포 환경이면 Render 백엔드 연결)
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? '' 
+  : 'https://naver-place-diagnosis-public.onrender.com';
+
 async function fetchRateLimitStatus() {
   try {
-    const res = await fetch("/api/rate-limit-status");
+    const res = await fetch(`${API_BASE}/api/rate-limit-status`);
     if (res.ok) {
       const data = await res.json();
       const countEl = document.getElementById("remainingCount");
@@ -100,7 +105,7 @@ async function handleDiagnose(e) {
   startProgressBar();
 
   try {
-    const res = await fetch("/api/diagnose", {
+    const res = await fetch(`${API_BASE}/api/diagnose`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url })
