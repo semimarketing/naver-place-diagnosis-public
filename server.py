@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 네이버 플레이스 30초 무료 정밀 진단 전용 서버 (FastAPI)
 - 관리 위치: server.py
@@ -180,34 +180,19 @@ async def run_diagnose(req: DiagnoseRequest, request: Request):
 
 
 # ---------------------------------------------------------
-# 정적 웹 파일 서빙
+# 백엔드 전용 서버 설정 (HTML 웹 페이지 제거 및 공식 도메인 자동 리다이렉트)
 # ---------------------------------------------------------
-web_dir = os.path.join(CURRENT_DIR, "web")
-if os.path.exists(web_dir):
-    app.mount("/static", StaticFiles(directory=web_dir), name="static")
+from fastapi.responses import RedirectResponse
 
 @app.get("/")
 async def serve_index():
-    index_path = os.path.join(web_dir, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path, media_type="text/html")
-    return HTMLResponse("<h1>네이버 플레이스 정밀 진단 시스템</h1>")
+    # Render 주소로 직접 접속 시 공식 Cloudflare 웹사이트로 자동 이동
+    return RedirectResponse(url="https://naver-place-diagnosis.pages.dev", status_code=301)
 
 
-@app.get("/robots.txt")
-async def serve_robots():
-    robots_path = os.path.join(web_dir, "robots.txt")
-    if os.path.exists(robots_path):
-        return FileResponse(robots_path, media_type="text/plain")
-    return HTMLResponse("User-agent: *\nAllow: /\n", media_type="text/plain")
-
-
-@app.get("/sitemap.xml")
-async def serve_sitemap():
-    sitemap_path = os.path.join(web_dir, "sitemap.xml")
-    if os.path.exists(sitemap_path):
-        return FileResponse(sitemap_path, media_type="application/xml")
-    return HTMLResponse("<urlset></urlset>", media_type="application/xml")
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "service": "SEMI MARKETING Diagnosis Engine"}
 
 
 if __name__ == "__main__":
