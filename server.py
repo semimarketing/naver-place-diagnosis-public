@@ -225,10 +225,10 @@ async def handle_contact_submit(req: ContactRequest):
     except Exception as e:
         print(f"[Telegram Alert Error] {e}")
 
-    # [2] 이메일 SMTP 발송
+    # [2] 이메일 SMTP 발송 (STARTTLS 587 -> SSL 465)
     email_sent = False
     smtp_user = os.getenv("SMTP_USER", "mainkoapp@gmail.com")
-    smtp_pass = os.getenv("SMTP_PASS", "srbh opjj nqee yaah")
+    smtp_pass = os.getenv("SMTP_PASS", "srbhopjjnqeeyaah").replace(" ", "")
     to_email = os.getenv("RECEIVE_EMAIL", "semimkt.cs@gmail.com")
 
     try:
@@ -265,10 +265,17 @@ async def handle_contact_submit(req: ContactRequest):
         """
         mail.attach(MIMEText(body_html, 'html', 'utf-8'))
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
-            server.login(smtp_user, smtp_pass)
-            server.send_message(mail)
-            email_sent = True
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587, timeout=8) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_pass)
+                server.send_message(mail)
+                email_sent = True
+        except Exception:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=8) as server:
+                server.login(smtp_user, smtp_pass)
+                server.send_message(mail)
+                email_sent = True
     except Exception as e:
         print(f"[Email SMTP Error] {e}")
 
